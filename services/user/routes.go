@@ -4,6 +4,7 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"encoding/json"
+	"github.com/go-playground/validator/v10"
 
 	"github.com/luisfucros/go-api-tutorial/utils"
 	"github.com/luisfucros/go-api-tutorial/types"
@@ -33,6 +34,12 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 
 	err := utils.ParseJSON(r, payload); if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
+	}
+
+	if err := utils.Validate.Struct(payload); err != nil {
+		error := err.(validator.ValidattionErrors)
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload: %v", errors))
+		return
 	}
 
 	u, err := h.store.GetUserByEmail(payload.Email)
