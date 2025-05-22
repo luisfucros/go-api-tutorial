@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"encoding/json"
-	"github.com/luisfucros/go-api-tutorial/types"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -21,7 +20,7 @@ func WriteJSON(w http.ResponseWriter, status int, v any) error {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(status)
 	return json.NewEncoder(w).Encode(v)
-
+}
 	
 func WriteError(w http.ResponseWriter, status int, err error) {
 	WriteJSON(w, status, map[string]string{"error": err.Error()})

@@ -1,13 +1,14 @@
 package user
 
 import (
+	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
-	"encoding/json"
 	"github.com/go-playground/validator/v10"
 
 	"github.com/luisfucros/go-api-tutorial/utils"
 	"github.com/luisfucros/go-api-tutorial/types"
+	"github.com/luisfucros/go-api-tutorial/services/auth"
 )
 
 type Handler struct {
@@ -16,7 +17,7 @@ type Handler struct {
 
 func NewHandler(store types.UserStore) *Handler {
 	return &Handler{
-		store: store
+		store: store,
 	}
 }
 
@@ -37,15 +38,15 @@ func (h *Handler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := utils.Validate.Struct(payload); err != nil {
-		error := err.(validator.ValidattionErrors)
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload: %v", errors))
+		error := err.(validator.ValidationErrors)
+		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload: %v", error))
 		return
 	}
 
-	u, err := h.store.GetUserByEmail(payload.Email)
+	_, err = h.store.GetUserByEmail(payload.Email)
 	if err == nil {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("user with email %s already exists",
-		 user.Email))
+		 payload.Email))
 		return
 	}
 
