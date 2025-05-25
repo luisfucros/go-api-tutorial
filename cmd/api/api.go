@@ -6,8 +6,10 @@ import (
 	"net/http"
 	"log"
 
-	"github.com/luisfucros/go-api-tutorial/services/user"
+	"github.com/luisfucros/go-api-tutorial/services/cart"
 	"github.com/luisfucros/go-api-tutorial/services/product"
+	"github.com/luisfucros/go-api-tutorial/services/order"
+	"github.com/luisfucros/go-api-tutorial/services/user"
 )
 
 type APIServer struct {
@@ -31,8 +33,13 @@ func (s *APIServer) Run() error {
 	userHandler.RegisterRoutes(subrouter)
 
 	productStore := product.NewStore(s.db)
-	productHandler := product.NewHandler(productStore)
+	productHandler := product.NewHandler(productStore, userStore)
 	productHandler.RegisterRoutes(subrouter)
+
+	orderStore := order.NewStore(s.db)
+
+	cartHandler := cart.NewHandler(productStore, orderStore, userStore)
+	cartHandler.RegisterRoutes(subrouter)
 
 	log.Println("Listening on", s.addr)
 
