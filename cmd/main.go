@@ -1,12 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"database/sql"
+	
 	"github.com/go-sql-driver/mysql"
 	"github.com/luisfucros/go-api-tutorial/cmd/api"
-	"github.com/luisfucros/go-api-tutorial/db"
 	"github.com/luisfucros/go-api-tutorial/configs"
+	"github.com/luisfucros/go-api-tutorial/db"
 
 )
 
@@ -28,7 +30,7 @@ func main() {
 
 	initStorage(db)
 
-	server := api.NewAPIServer(":8080", db)
+	server := api.NewAPIServer(fmt.Sprintf(":%s", configs.Envs.Port), db)
 	err = server.Run(); if err != nil {
 		log.Fatal(err)
 	}
